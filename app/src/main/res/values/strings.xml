@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">EasyEat</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_coupon">優惠卷</string>
+    <string name="title_order">買東西囉</string>
+    <string name="title_cart">目前訂單</string>
+    <string name="title_record">消費記錄</string>
+</resources>
