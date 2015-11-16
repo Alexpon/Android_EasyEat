@@ -21,6 +21,8 @@ public class MyHostApduService extends HostApduService {
     private static int money = 0;
     boolean pinVerified = false;
 
+    private TmpUserLocalStore userLocalStore;
+
     private static final byte[] AID_SELECT_APDU = {
             (byte) 0x00, // CLA (class of command)
             (byte) 0xA4, // INS (instruction); A4 = select
@@ -74,6 +76,7 @@ public class MyHostApduService extends HostApduService {
                     break;
                 case 0x04:
                     certiSerialNum = Arrays.copyOfRange(apdu, 5, 5+data_length);
+                    Log.i("HCEDEMO", "certiSerialNum = " + new String(certiSerialNum));
                     break;
                 case 0x05:
                     publicKey = Arrays.copyOfRange(apdu, 5, 5+data_length);
@@ -91,6 +94,10 @@ public class MyHostApduService extends HostApduService {
                 case 0x09:
                     money = byteArrayToInt(Arrays.copyOfRange(apdu, 5, 5+data_length));
                     Log.i("HCEDEMO", "Money = " + money);
+                    User user = new User(new String(userID), new String(username), new String(certiIssuedDate),
+                            new String(certiExpiredDate), new String(certiSerialNum), money);
+                    userLocalStore = new TmpUserLocalStore(getApplicationContext());
+                    userLocalStore.storeUserData(user);
                     break;
                 default:
                     returnVal[0] = (byte) 0x01;
@@ -165,6 +172,7 @@ public class MyHostApduService extends HostApduService {
                 if (apdu[3] == 0x00) {              ///// ADD MONEY
                     byte[] add_money = Arrays.copyOfRange(apdu, 5, 5+data_length);
                     money += byteArrayToInt(add_money);
+                    userLocalStore.modifyMoney(money);
                     Log.i("HCEDEMO", "Update Money = " + money);
                 }
                 else if (apdu[3] == 0x01) {         ///// PAY
@@ -176,6 +184,7 @@ public class MyHostApduService extends HostApduService {
                         return answer;
                     }
                     money -= byteArrayToInt(sub_money);
+                    userLocalStore.modifyMoney(money);
                     Log.i("HCEDEMO", "Update Money = " + money);
                 }
                 else if (apdu[3] == 0x02) {          ///// EXPIRED DATE

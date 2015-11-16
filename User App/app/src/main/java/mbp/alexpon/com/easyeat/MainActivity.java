@@ -47,12 +47,7 @@ public class MainActivity extends FragmentActivity {
      * 給子頁籤呼叫用
      *
      **************************/
-    public String getAppleData(){
-        return "Apple 123";
-    }
-    public String getGoogleData(){
-        return "Google 456";
-    }
+
     public String getFacebookData(){
         return "Facebook 789";
     }
