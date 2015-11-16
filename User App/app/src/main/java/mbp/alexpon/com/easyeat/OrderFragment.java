@@ -1,6 +1,8 @@
 package mbp.alexpon.com.easyeat;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -22,6 +24,7 @@ public class OrderFragment extends Fragment {
     private View v;
     private Button btn_confiem;
     private MyAdapter myAdapter;
+    private String clickedStoreID;
 
     @Override
     public void onAttach(Activity activity) {
@@ -58,7 +61,8 @@ public class OrderFragment extends Fragment {
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            Toast.makeText(getActivity(), "你按了" + returnedStore.store_name[position], Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "你按了" + returnedStore.store_id[position] + returnedStore.store_name[position], Toast.LENGTH_SHORT).show();
+                            clickedStoreID = returnedStore.store_id[position];
                             fetchMenuList(returnedStore.store_name[position]);
                         }
                     });
@@ -102,11 +106,12 @@ public class OrderFragment extends Fragment {
 
     public void update(String order){
         ServerRequests serverRequests = new ServerRequests(getActivity());
-        serverRequests.fetchNumberInBackground(order, new GetNumberCallBack() {
+        serverRequests.fetchNumberInBackground(clickedStoreID, order, new GetNumberCallBack() {
             @Override
             public void done(final String num[]) {
                 if (num != null) {
                     Toast.makeText(getActivity(), num[0]+" "+num[1], Toast.LENGTH_SHORT).show();
+                    showAlertDialog(num);
                 }
             }
         });
@@ -123,6 +128,27 @@ public class OrderFragment extends Fragment {
             }
         }
         return order;
+    }
+
+    public void showAlertDialog(String num[]){
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+        if(num[0] != "0" && num[1] != "0"){
+            dialog.setTitle("下單成功");
+            dialog.setMessage("您的號碼牌： " + num[0] + "\n目前店家號碼： " + num[1]);
+        }
+        else{
+            dialog.setTitle("下單失敗");
+            dialog.setMessage("抱歉，麻煩重新操作一次");
+        }
+        dialog.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                // TODO Auto-generated method stub
+                Toast.makeText(getActivity(), "我了解了",Toast.LENGTH_SHORT).show();
+            }
+
+        });
+        dialog.show();
     }
 
 }

@@ -28,7 +28,7 @@ import java.util.ArrayList;
 public class ServerRequests {
     private ProgressDialog progressDialog;
     public static final int CONNECTION_TIMEOUT = 1000 * 15;
-    public static final String SERVER_ADDRESS = "http://ponpon88810.netii.net/";
+    public static final String SERVER_ADDRESS = "http://140.116.97.92/project/";
 
     public ServerRequests(Context context) {
         progressDialog = new ProgressDialog(context);
@@ -161,9 +161,9 @@ public class ServerRequests {
         }
     }
 
-    public void fetchNumberInBackground(String order, GetNumberCallBack numberCallBack) {
+    public void fetchNumberInBackground(String storeID, String order, GetNumberCallBack numberCallBack) {
         progressDialog.show();
-        new fetchNumberAsyncTask(order, numberCallBack).execute();
+        new fetchNumberAsyncTask(storeID, order, numberCallBack).execute();
     }
 
     public class fetchNumberAsyncTask extends AsyncTask<Void, Void, String[]> {
@@ -171,10 +171,10 @@ public class ServerRequests {
         GetNumberCallBack numberCallBack;
         String store, person, order;
 
-        public fetchNumberAsyncTask(String order, GetNumberCallBack numberCallBack) {
+        public fetchNumberAsyncTask(String storeID, String order, GetNumberCallBack numberCallBack) {
             this.numberCallBack = numberCallBack;
-            store = "001";
-            person = "ALEX";
+            store = storeID;
+            person = "test";
             this.order = order;
         }
 
@@ -199,15 +199,15 @@ public class ServerRequests {
                 httpPost.setEntity(new UrlEncodedFormEntity(dataToSend));
                 HttpResponse httpResponse = client.execute(httpPost);
                 HttpEntity httpEntity = httpResponse.getEntity();
-                Log.i("FUCK", "HI");
                 result = EntityUtils.toString(httpEntity);
-                Log.i("FUCK", result);
-                JSONObject jsonObject = new JSONObject(result);
-                if (jsonObject.length() == 0) {
+                JSONArray jsonArray = new JSONArray(result);
+
+                if (jsonArray.length() == 0) {
                     returnedNum = null;
                 } else {
-                    returnedNum[0] = jsonObject.getString("num");
-                    returnedNum[1] = jsonObject.getString("now");
+                    JSONObject stock_data = jsonArray.getJSONObject(0);
+                    returnedNum[0] = stock_data.getString("num");
+                    returnedNum[1] = stock_data.getString("now");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
