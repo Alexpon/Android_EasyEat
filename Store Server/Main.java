@@ -1,16 +1,7 @@
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Arrays;
-
 import javax.smartcardio.*;
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 public class Demo{
 
@@ -24,7 +15,6 @@ public class Demo{
 	public static CommandAPDU command;
 	public static ResponseAPDU response;
 
-	//wallet
 	public static byte[] SelectAID = new byte[]{(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00, (byte) 0x07,
 		(byte) 0xF0, (byte) 0x39, (byte) 0x41, (byte) 0x48, (byte) 0x14, (byte) 0x81, (byte) 0x00, (byte) 0x00
 	};
@@ -44,9 +34,7 @@ public class Demo{
 			(byte) 0x80, (byte) 0x01, (byte) 0x00, (byte) 0x03
 	};
 	public static byte[] SelectPersoCertiSerialNum = new byte[]{
-			(byte) 0x80, (byte) 0x01, (byte) 0x00, (byte) 0x04,
-			(byte) 0x0c, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-						 (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
+			(byte) 0x80, (byte) 0x01, (byte) 0x00, (byte) 0x04
 	};
 	public static byte[] SelectPersoPublicKey = new byte[]{
 			(byte) 0x80, (byte) 0x01, (byte) 0x00, (byte) 0x05, 
@@ -141,7 +129,6 @@ public class Demo{
 			(byte) 0x80, (byte) 0x05, (byte) 0x00, (byte) 0x04, (byte) 0x00
 };
 	
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////NEW    END//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public static int byteArrayToInt(byte[] b) 
 	{
@@ -161,10 +148,9 @@ public class Demo{
 	    };
 	}
 	
-	public static void main(String[] args) throws UnsupportedEncodingException {
+	public static void main(String[] args) {
 			
-					perso();
-					
+					perso();				
 					readUserInfo();
 					writeData(intToByteArray(50), 1);
 					writeData(intToByteArray(20), 2);
@@ -172,9 +158,7 @@ public class Demo{
 	}
 
 	public static void perso(){
-		
 		byte[] recv;
-		
 		try {
 			for (CardTerminal terminal : terminalFactory.terminals().list()) {
 				System.out.println(terminal.getName());
@@ -275,10 +259,16 @@ public class Demo{
 				
 	
 			//CertiSerialNum
-				System.out.println("persoCertiSerialNum ");
-				command = new CommandAPDU(SelectPersoCertiSerialNum);
-				response = channel.transmit(command);
+				String certiSerialNum = "A7fjg&fow#d";
+				byte[] byte_certiSerialNum = certiSerialNum.getBytes();
+				byte[] send_certiSerialNum = new byte[5+byte_certiSerialNum.length];
+				send_certiSerialNum[4] = (byte) byte_certiSerialNum.length;
+				System.arraycopy(SelectPersoCertiSerialNum, 0, send_certiSerialNum, 0, SelectPersoCertiSerialNum.length);
+				System.arraycopy(byte_certiSerialNum, 0, send_certiSerialNum, 5, byte_certiSerialNum.length);
 				
+				System.out.println("persoCertiSerialNum ");
+				command = new CommandAPDU(send_certiSerialNum);
+				response = channel.transmit(command);
 				recv = response.getBytes();
 				for (int i = 0; i < recv.length; i++) {
 				System.out.print(String.format("%02X", recv[i]));
