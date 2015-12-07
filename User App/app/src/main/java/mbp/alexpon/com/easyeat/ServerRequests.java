@@ -161,9 +161,9 @@ public class ServerRequests {
         }
     }
 
-    public void fetchNumberInBackground(String storeID, String order, GetNumberCallBack numberCallBack) {
+    public void fetchNumberInBackground(String storeID, String person, String order, GetNumberCallBack numberCallBack) {
         progressDialog.show();
-        new fetchNumberAsyncTask(storeID, order, numberCallBack).execute();
+        new fetchNumberAsyncTask(storeID, person, order, numberCallBack).execute();
     }
 
     public class fetchNumberAsyncTask extends AsyncTask<Void, Void, String[]> {
@@ -171,10 +171,11 @@ public class ServerRequests {
         GetNumberCallBack numberCallBack;
         String store, person, order;
 
-        public fetchNumberAsyncTask(String storeID, String order, GetNumberCallBack numberCallBack) {
+
+        public fetchNumberAsyncTask(String storeID, String person, String order, GetNumberCallBack numberCallBack) {
             this.numberCallBack = numberCallBack;
             store = storeID;
-            person = "test";
+            this.person = person;
             this.order = order;
         }
 
@@ -220,6 +221,70 @@ public class ServerRequests {
             progressDialog.dismiss();
             numberCallBack.done(returnedNum);
             super.onPostExecute(returnedNum);
+        }
+
+    }
+
+    public void fetchUserNowMenu(String person, GetNowMenuCallBack nowMenuCallBack) {
+        progressDialog.show();
+        new fetchUserNowMenuAsyncTask(person, nowMenuCallBack).execute();
+    }
+
+    public class fetchUserNowMenuAsyncTask extends AsyncTask<Void, Void, NowMenu> {
+
+        GetNowMenuCallBack nowMenuCallBack;
+        String person;
+
+
+        public fetchUserNowMenuAsyncTask(String person, GetNowMenuCallBack nowMenuCallBack) {
+            this.nowMenuCallBack = nowMenuCallBack;
+            this.person = person;
+        }
+
+        @Override
+        protected NowMenu doInBackground(Void... params) {
+
+            NowMenu nowMenus=null;
+            String result = "";
+
+            ArrayList<NameValuePair> dataToSend = new ArrayList<>();
+            dataToSend.add(new BasicNameValuePair("person", person));
+
+            HttpParams httpParams = new BasicHttpParams();
+            HttpConnectionParams.setConnectionTimeout(httpParams, CONNECTION_TIMEOUT);
+            HttpConnectionParams.setSoTimeout(httpParams, CONNECTION_TIMEOUT);
+            HttpClient client = new DefaultHttpClient(httpParams);
+            HttpPost httpPost = new HttpPost(SERVER_ADDRESS + "EasyEat_GetNowMenu.php");
+
+            try {
+                httpPost.setEntity(new UrlEncodedFormEntity(dataToSend));
+                HttpResponse httpResponse = client.execute(httpPost);
+                HttpEntity httpEntity = httpResponse.getEntity();
+                result = EntityUtils.toString(httpEntity);
+                JSONArray jsonArray = new JSONArray(result);
+
+                if (jsonArray.length() == 0) {
+                    nowMenus = null;
+                } else {
+                    nowMenus = new NowMenu(jsonArray.length());
+                    JSONObject stock_data;
+                    for(int i=0; i<jsonArray.length(); i++){
+                        stock_data = jsonArray.getJSONObject(i);
+                        nowMenus.add(stock_data.getString("store_name"), stock_data.getInt("money"),
+                                stock_data.getInt("my_num"), stock_data.getInt("now_num"));
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return nowMenus;
+        }
+        @Override
+        protected void onPostExecute(NowMenu nowMenu) {
+            progressDialog.dismiss();
+            nowMenuCallBack.done(nowMenu);
+            super.onPostExecute(nowMenu);
         }
 
     }

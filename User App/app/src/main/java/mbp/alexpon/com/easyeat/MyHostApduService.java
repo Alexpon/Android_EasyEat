@@ -212,7 +212,7 @@ public class MyHostApduService extends HostApduService {
 
         else if (selectReadNormalDataApdu(apdu)) {
             Log.i("HCEDEMO", "ReadNormalData selected");
-            byte[] answer = null;
+            byte[] answer = {0, 0};
             byte[] data;
 
             switch (apdu[3]) {
@@ -247,10 +247,29 @@ public class MyHostApduService extends HostApduService {
             responseApdu = answer;
             return responseApdu;
         }
+        else if(selectReadSerialNumApdu(apdu)){
+            Log.i("HCEDEMO", "Serial num selected");
+            byte[] answer = {0, 0};
+            byte[] data = certiSerialNum;
+
+            Log.i("HCEDEMO", new String(certiSerialNum));
+
+            if (data == null) {
+                answer[0] = (byte) 0x05;
+                answer[1] = (byte) 0x00;
+            } else {
+                answer = new byte[data.length + 2];
+                answer[0] = (byte) 0x90;
+                answer[1] = (byte) 0x00;
+                System.arraycopy(data, 0, answer, 2, data.length);
+            }
+            responseApdu = answer;
+            return responseApdu;
+        }
         else {
-            byte[] answer = null;
+            byte[] answer = {0, 0};
             answer[0] = (byte) 0x99;
-            answer[0] = (byte) 0x99;
+            answer[1] = (byte) 0x99;
             return answer;
         }
     }
@@ -276,6 +295,9 @@ public class MyHostApduService extends HostApduService {
         return ( apdu.length >= 4 && apdu[0] == (byte) 0x80 && apdu[1] == (byte) 0x05 &&  apdu[2] == (byte) 0x00);
     }
 
+    private boolean selectReadSerialNumApdu(byte[] apdu) {
+        return ( apdu.length >= 4 && apdu[0] == (byte) 0x80 && apdu[1] == (byte) 0x06 &&  apdu[2] == (byte) 0x00 &&  apdu[3] == (byte) 0x03);
+    }
     //////////////////////////////////////////////////////////////////////////////////////////NEW  END//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 

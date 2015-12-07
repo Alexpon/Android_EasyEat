@@ -17,9 +17,6 @@ public class RecordFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
-        MainActivity mainActivity = (MainActivity)activity;
-        value = mainActivity.getTwitterData();
     }
 
     @Override

@@ -25,6 +25,9 @@ public class OrderFragment extends Fragment {
     private Button btn_confiem;
     private MyAdapter myAdapter;
     private String clickedStoreID;
+    private TmpUserLocalStore userLocalStore;
+    private User user;
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -35,6 +38,8 @@ public class OrderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         v = inflater.inflate(R.layout.fragment_order, container, false);
+        userLocalStore = new TmpUserLocalStore(getActivity());
+        user = userLocalStore.getUserData();
         fetchStoreList();
         return v;
     }
@@ -106,7 +111,7 @@ public class OrderFragment extends Fragment {
 
     public void update(String order){
         ServerRequests serverRequests = new ServerRequests(getActivity());
-        serverRequests.fetchNumberInBackground(clickedStoreID, order, new GetNumberCallBack() {
+        serverRequests.fetchNumberInBackground(clickedStoreID, user.getCertiSerialNum(), order, new GetNumberCallBack() {
             @Override
             public void done(final String num[]) {
                 if (num != null) {
@@ -132,7 +137,7 @@ public class OrderFragment extends Fragment {
 
     public void showAlertDialog(String num[]){
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
-        if(num[0] != "0" && num[1] != "0"){
+        if(num[0] != "0"){
             dialog.setTitle("下單成功");
             dialog.setMessage("您的號碼牌： " + num[0] + "\n目前店家號碼： " + num[1]);
         }

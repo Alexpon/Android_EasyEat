@@ -16,6 +16,13 @@
         <dex dex="/Users/apple/AndroidStudioProjects/EasyEat/app/build/intermediates/pre-dexed/debug/classes-e9c3809a72caf46c13b5ebf218c71b26714be2f1.jar" />
     </item>
     <item
+        jar="/Users/apple/AndroidStudioProjects/EasyEat/app/build/intermediates/exploded-aar/org.altbeacon/android-beacon-library/2.7.1/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="cf8e282e7c1cdf175467ed2b40a358a271cda953">
+        <dex dex="/Users/apple/AndroidStudioProjects/EasyEat/app/build/intermediates/pre-dexed/debug/classes-46faa82d1089b63392b4eb23dc46465650eb2d99.jar" />
+    </item>
+    <item
         jar="/Users/apple/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.2/support-annotations-21.0.2.jar"
         jumboMode="false"
         revision="21.1.2"
