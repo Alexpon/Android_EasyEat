@@ -27,7 +27,7 @@ public class BackgroundSync extends Service {
         IntentFilter filter =new IntentFilter("com.alexpon.easyeat");
         registerReceiver(receiver, filter);
         Timer timer =new Timer();
-        timer.schedule(new BackgroundTask(this), 0, 30000); //每隔30秒抓一次資料庫
+        timer.schedule(new BackgroundTask(this), 0, 10000); //每隔30秒抓一次資料庫
     }
 
 

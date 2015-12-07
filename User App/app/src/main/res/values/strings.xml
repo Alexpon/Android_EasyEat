@@ -7,7 +7,9 @@
     <string name="title_order">買東西囉</string>
     <string name="title_cart">目前訂單</string>
     <string name="title_record">使用者資訊</string>
-
     <string name="aiddescription">aiddescription</string>
     <string name="servicedesc">servicedesc</string>
+    <string name="title_activity_ad">AdActivity</string>
+    <string name="hello_world">Hello world!</string>
+
 </resources>

@@ -66,7 +66,7 @@ public class OrderFragment extends Fragment {
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            Toast.makeText(getActivity(), "你按了" + returnedStore.store_id[position] + returnedStore.store_name[position], Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getActivity(), "你按了" + returnedStore.store_id[position] + returnedStore.store_name[position], Toast.LENGTH_SHORT).show();
                             clickedStoreID = returnedStore.store_id[position];
                             fetchMenuList(returnedStore.store_name[position]);
                         }

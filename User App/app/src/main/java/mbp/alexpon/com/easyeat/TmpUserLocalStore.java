@@ -41,7 +41,7 @@ public class TmpUserLocalStore {
     public void modifyMoney(int money){
         SharedPreferences.Editor spEditor = userLocalDatabase.edit();
         spEditor.putInt("money", money);
-        spEditor.commit();
+        spEditor.apply();
     }
 
 

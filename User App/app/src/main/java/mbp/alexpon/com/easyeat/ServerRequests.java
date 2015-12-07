@@ -16,6 +16,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -126,7 +127,7 @@ public class ServerRequests {
             HttpPost httpPost = new HttpPost(SERVER_ADDRESS + "EasyEat_FetchMenu.php");
 
             try {
-                httpPost.setEntity(new UrlEncodedFormEntity(dataToSend));
+                httpPost.setEntity(new UrlEncodedFormEntity(dataToSend, HTTP.UTF_8));
                 HttpResponse httpResponse = client.execute(httpPost);
                 HttpEntity httpEntity = httpResponse.getEntity();
                 result = EntityUtils.toString(httpEntity);
@@ -197,7 +198,7 @@ public class ServerRequests {
             HttpPost httpPost = new HttpPost(SERVER_ADDRESS + "EasyEat_Order.php");
 
             try {
-                httpPost.setEntity(new UrlEncodedFormEntity(dataToSend));
+                httpPost.setEntity(new UrlEncodedFormEntity(dataToSend, HTTP.UTF_8));
                 HttpResponse httpResponse = client.execute(httpPost);
                 HttpEntity httpEntity = httpResponse.getEntity();
                 result = EntityUtils.toString(httpEntity);
@@ -257,7 +258,7 @@ public class ServerRequests {
             HttpPost httpPost = new HttpPost(SERVER_ADDRESS + "EasyEat_GetNowMenu.php");
 
             try {
-                httpPost.setEntity(new UrlEncodedFormEntity(dataToSend));
+                httpPost.setEntity(new UrlEncodedFormEntity(dataToSend, HTTP.UTF_8));
                 HttpResponse httpResponse = client.execute(httpPost);
                 HttpEntity httpEntity = httpResponse.getEntity();
                 result = EntityUtils.toString(httpEntity);
@@ -288,4 +289,69 @@ public class ServerRequests {
         }
 
     }
+
+    public void fetchUserRecord(String person, GetRecordCallBack recordCallBack) {
+        progressDialog.show();
+        new fetchUserRecordAsyncTask(person, recordCallBack).execute();
+    }
+
+    public class fetchUserRecordAsyncTask extends AsyncTask<Void, Void, NowRecord> {
+
+        GetRecordCallBack recordCallBack;
+        String person;
+
+
+        public fetchUserRecordAsyncTask(String person, GetRecordCallBack recordCallBack) {
+            this.recordCallBack = recordCallBack;
+            this.person = person;
+        }
+
+        @Override
+        protected NowRecord doInBackground(Void... params) {
+
+            NowRecord nowRecord=null;
+            String result = "";
+
+            ArrayList<NameValuePair> dataToSend = new ArrayList<>();
+            dataToSend.add(new BasicNameValuePair("person", person));
+
+            HttpParams httpParams = new BasicHttpParams();
+            HttpConnectionParams.setConnectionTimeout(httpParams, CONNECTION_TIMEOUT);
+            HttpConnectionParams.setSoTimeout(httpParams, CONNECTION_TIMEOUT);
+            HttpClient client = new DefaultHttpClient(httpParams);
+            HttpPost httpPost = new HttpPost(SERVER_ADDRESS + "EasyEat_GetRecord.php");
+
+            try {
+                httpPost.setEntity(new UrlEncodedFormEntity(dataToSend, HTTP.UTF_8));
+                HttpResponse httpResponse = client.execute(httpPost);
+                HttpEntity httpEntity = httpResponse.getEntity();
+                result = EntityUtils.toString(httpEntity);
+                JSONArray jsonArray = new JSONArray(result);
+
+                if (jsonArray.length() == 0) {
+                    nowRecord = null;
+                } else {
+                    nowRecord = new NowRecord(jsonArray.length());
+                    JSONObject stock_data;
+                    for(int i=0; i<jsonArray.length(); i++){
+                        stock_data = jsonArray.getJSONObject(i);
+                        nowRecord.add(stock_data.getString("store_name"),
+                                stock_data.getString("date"),stock_data.getInt("money"));
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return nowRecord;
+        }
+        @Override
+        protected void onPostExecute(NowRecord nowRecord) {
+            progressDialog.dismiss();
+            recordCallBack.done(nowRecord);
+            super.onPostExecute(nowRecord);
+        }
+
+    }
+
 }

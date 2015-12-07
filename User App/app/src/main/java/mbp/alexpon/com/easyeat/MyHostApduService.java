@@ -9,19 +9,20 @@ import java.util.Arrays;
 
 public class MyHostApduService extends HostApduService {
 
-    private byte[] userID = new byte[10];
-    private byte[] username = new byte[12];
-    private byte[] certiIssuedDate = new byte[6];
-    private byte[] certiExpiredDate = new byte[6];
-    private byte[] certiSerialNum = new byte[12];
-    private byte[] publicKey = new byte[64];
-    private byte[] privateKey = new byte[64];
-    private byte[] digitalSignature = new byte[32];
-    private byte[] pinCode = new byte[8];
+    private static byte[] userID = new byte[10];
+    private static byte[] username = new byte[12];
+    private static byte[] certiIssuedDate = new byte[6];
+    private static byte[] certiExpiredDate = new byte[6];
+    private static byte[] certiSerialNum = new byte[12];
+    private static byte[] publicKey = new byte[64];
+    private static byte[] privateKey = new byte[64];
+    private static byte[] digitalSignature = new byte[32];
+    private static byte[] pinCode = new byte[8];
     private static int money = 0;
     boolean pinVerified = false;
 
     private TmpUserLocalStore userLocalStore;
+
 
     private static final byte[] AID_SELECT_APDU = {
             (byte) 0x00, // CLA (class of command)
@@ -51,6 +52,7 @@ public class MyHostApduService extends HostApduService {
         }
 
 //////////////////////////////////////////////////////// PERSO /////////////////////////////////////////////////////
+
 
         else if (selectPersoApdu(apdu)){
             byte[] returnVal = new byte[2];
@@ -172,6 +174,7 @@ public class MyHostApduService extends HostApduService {
                 if (apdu[3] == 0x00) {              ///// ADD MONEY
                     byte[] add_money = Arrays.copyOfRange(apdu, 5, 5+data_length);
                     money += byteArrayToInt(add_money);
+                    userLocalStore = new TmpUserLocalStore(getApplicationContext());
                     userLocalStore.modifyMoney(money);
                     Log.i("HCEDEMO", "Update Money = " + money);
                 }
@@ -184,6 +187,7 @@ public class MyHostApduService extends HostApduService {
                         return answer;
                     }
                     money -= byteArrayToInt(sub_money);
+                    userLocalStore = new TmpUserLocalStore(getApplicationContext());
                     userLocalStore.modifyMoney(money);
                     Log.i("HCEDEMO", "Update Money = " + money);
                 }

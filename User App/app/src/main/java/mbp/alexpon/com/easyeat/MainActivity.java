@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.util.Log;
@@ -14,23 +15,32 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
+import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.Identifier;
+import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 public class MainActivity extends FragmentActivity implements BeaconConsumer{
 
     private Intent intent;
     private BeaconManager beaconManager;
     private Region region;
+    private Boolean adFlag;
 
     @Override
     public void onBeaconServiceConnect() {
-
+        //startScanning();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setTag();
@@ -40,16 +50,13 @@ public class MainActivity extends FragmentActivity implements BeaconConsumer{
 
 
         verifyBluetooth();
-/*
-        ScanApp app = (ScanApp) this.getApplication();
-        beaconManager = app.getBeaconManager();
+
+        beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         //beaconManager.setForegroundBetweenScanPeriod((long)2000);
         beaconManager.bind(this);
-
         region = new Region("myRangUniqueId", null, Identifier.fromInt(4660), null);
-*/
 
     }
 
@@ -112,6 +119,56 @@ public class MainActivity extends FragmentActivity implements BeaconConsumer{
     protected void onStop() {
         super.onStop();
         Log.i("onStop","onStop");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        beaconManager.unbind(this);
+    }
+
+    private void startScanning() {
+        adFlag = true;
+        beaconManager.setRangeNotifier(new RangeNotifier() {
+            @Override
+            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+                if (beacons.size() > 0) {
+                    Iterator<Beacon> beaconIterator = beacons.iterator();
+                    if (beaconIterator.hasNext()) {
+                        do {
+                            Beacon beacon = beaconIterator.next();
+                            logBeaconData(beacon);
+                        } while (beaconIterator.hasNext());
+                    }
+                }
+            }
+        });
+
+        try {
+            beaconManager.startRangingBeaconsInRegion(region);
+        } catch (RemoteException e) {
+            Log.i("BBBBB", e+"");
+        }
+
+    }
+
+    private void stopScanning() {
+        try {
+            beaconManager.stopRangingBeaconsInRegion(region);
+        } catch (RemoteException e) {
+        }
+    }
+
+    private void logBeaconData(Beacon beacon) {
+
+        double dis = beacon.getDistance();
+        if (beacon.getId2().toInt() == 4660 && dis < 1 && adFlag) {
+            adFlag = false;
+            Intent adIntent = new Intent();
+            adIntent.setClass(MainActivity.this, AdActivity.class);
+            startActivity(adIntent);
+        }
+
     }
 
     private void verifyBluetooth() {
