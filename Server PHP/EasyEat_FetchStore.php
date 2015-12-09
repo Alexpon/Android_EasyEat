@@ -1,5 +1,5 @@
 <?php
-	$con = mysqli_connect("localhost", "root", "atms62x07ship", "project");
+	$con = mysqli_connect("localhost", "root", "", "");
 	
 	$statement = mysqli_prepare($con, 'SELECT * FROM easyeat_storelist');
 	mysqli_stmt_execute($statement);

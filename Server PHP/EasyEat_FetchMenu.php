@@ -1,5 +1,5 @@
 <?php
-	$con = mysqli_connect("localhost", "root", "atms62x07ship", "project");
+	$con = mysqli_connect("localhost", "root", "", "");
 	
 	$store = $_POST["store"];
 
