@@ -29,7 +29,7 @@ import java.util.ArrayList;
 public class ServerRequests {
     private ProgressDialog progressDialog;
     public static final int CONNECTION_TIMEOUT = 1000 * 15;
-    public static final String SERVER_ADDRESS = "";
+    public static final String SERVER_ADDRESS = "http://140.116.97.92/project/";
 
     public ServerRequests(Context context) {
         progressDialog = new ProgressDialog(context);

@@ -9,6 +9,7 @@ import java.util.Arrays;
 
 public class MyHostApduService extends HostApduService {
 
+    //try not to initialize
     private static byte[] userID = new byte[10];
     private static byte[] username = new byte[12];
     private static byte[] certiIssuedDate = new byte[6];

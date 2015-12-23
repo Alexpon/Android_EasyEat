@@ -1,31 +1,32 @@
-<android.support.v4.app.FragmentTabHost
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/tabhost"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/selected_background"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <TextView
+        android:layout_width="300dp"
+        android:layout_height="500dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=""
+        android:textSize="30sp"
+        android:id="@+id/main_info"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/main_btn" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Refresh"
+        android:id="@+id/main_btn"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
-        <TabWidget
-            android:id="@android:id/tabs"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"/>
-
-        <FrameLayout
-            android:id="@android:id/tabcontent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"/>
-
-        <FrameLayout
-            android:id="@+id/realtabcontent"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-    </LinearLayout>
-</android.support.v4.app.FragmentTabHost>
+</RelativeLayout>
