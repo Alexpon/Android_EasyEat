@@ -1,11 +1,8 @@
 package mbp.alexpon.com.easyeat;
 
-import android.app.AlertDialog;
 import android.app.NotificationManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.util.Log;
@@ -15,24 +12,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
-import org.altbeacon.beacon.BeaconManager;
-import org.altbeacon.beacon.BeaconParser;
-import org.altbeacon.beacon.Identifier;
-import org.altbeacon.beacon.RangeNotifier;
-import org.altbeacon.beacon.Region;
-
-import java.util.Collection;
-import java.util.Iterator;
 
 
 public class HaveCardMainPage extends FragmentActivity implements BeaconConsumer {
 
     private Intent intent;
-    private BeaconManager beaconManager;
-    private Region region;
-    private Boolean adFlag;
+    //private BeaconManager beaconManager;
+    //private Region region;
+    //private Boolean adFlag;
 
 
     @Override
@@ -51,6 +39,7 @@ public class HaveCardMainPage extends FragmentActivity implements BeaconConsumer
         startService(service);
         intent = getIntent();
 */
+/*
         verifyBluetooth();
 
         beaconManager = BeaconManager.getInstanceForApplication(this);
@@ -58,7 +47,7 @@ public class HaveCardMainPage extends FragmentActivity implements BeaconConsumer
                 setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         beaconManager.bind(this);
         region = new Region("myRangUniqueId", null, Identifier.fromInt(4660), null);
-
+*/
     }
 
 
@@ -127,9 +116,9 @@ public class HaveCardMainPage extends FragmentActivity implements BeaconConsumer
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        beaconManager.unbind(this);
+        //beaconManager.unbind(this);
     }
-
+/*
     private void startScanning() {
         adFlag = true;
         beaconManager.setRangeNotifier(new RangeNotifier() {
@@ -208,5 +197,5 @@ public class HaveCardMainPage extends FragmentActivity implements BeaconConsumer
         }
 
     }
-
+*/
 }

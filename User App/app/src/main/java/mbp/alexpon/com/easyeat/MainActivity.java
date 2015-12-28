@@ -25,11 +25,13 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if(varifyCard(this)){
+            Log.i("DDD", "Have card");
             Intent intent1 = new Intent(MainActivity.this, HaveCardMainPage.class);
             startActivity(intent1);
             finish();
         }
         else{
+            Log.i("DDD", "No card");
             TextView main_info = (TextView) findViewById(R.id.main_info);
             main_info.setText(R.string.infoFragment_no_card_info);
         }
@@ -39,9 +41,13 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 if(varifyCard(getApplication())){
+                    Log.i("DDD", "Have card");
                     Intent intent1 = new Intent(MainActivity.this, HaveCardMainPage.class);
                     startActivity(intent1);
                     finish();
+                }
+                else{
+                    Log.i("DDD", "No card");
                 }
             }
         });

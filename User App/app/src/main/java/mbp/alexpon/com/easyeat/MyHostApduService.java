@@ -10,21 +10,20 @@ import java.util.Arrays;
 public class MyHostApduService extends HostApduService {
 
     //try not to initialize
-    private static byte[] userID = new byte[10];
-    private static byte[] username = new byte[12];
-    private static byte[] certiIssuedDate = new byte[6];
-    private static byte[] certiExpiredDate = new byte[6];
-    private static byte[] certiSerialNum = new byte[12];
+    private static byte[] userID;
+    private static byte[] username;
+    private static byte[] certiIssuedDate;
+    private static byte[] certiExpiredDate;
+    private static byte[] certiSerialNum;
     private static byte[] publicKey = new byte[64];
     private static byte[] privateKey = new byte[64];
     private static byte[] digitalSignature = new byte[32];
-    private static byte[] pinCode = new byte[8];
-    private static int money = 0;
+    private static byte[] pinCode;
+    private static int money;
     boolean pinVerified = false;
 
     private TmpUserLocalStore userLocalStore;
-
-
+    private User user;
     private static final byte[] AID_SELECT_APDU = {
             (byte) 0x00, // CLA (class of command)
             (byte) 0xA4, // INS (instruction); A4 = select
@@ -34,6 +33,20 @@ public class MyHostApduService extends HostApduService {
             (byte) 0xF0, (byte) 0x39, (byte) 0x41, (byte) 0x48, (byte) 0x14, (byte) 0x81, (byte) 0x00,
             (byte) 0x00 // LE   (max length of expected result, 0 implies 256)
     };
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.i("DDD", "Service onCreat");
+        userLocalStore = new TmpUserLocalStore(getApplicationContext());
+        user = userLocalStore.getUserData();
+        userID = user.getUserID().getBytes();
+        username = user.getUsername().getBytes();
+        certiIssuedDate = user.getIssuedDate().getBytes();
+        certiExpiredDate = user.getExpiredDate().getBytes();
+        certiSerialNum = user.getCertiSerialNum().getBytes();
+        money = user.getMoney();
+    }
 
     @Override
     public byte[] processCommandApdu(byte[] apdu, Bundle extras) {
@@ -126,7 +139,7 @@ public class MyHostApduService extends HostApduService {
                 } else {
                     answer[0] = (byte) 0x02;
                     answer[1] = (byte) 0x00;
-                    pinVerified = false;
+                    pinVerified = true;
                 }
             }
             else{
@@ -170,9 +183,11 @@ public class MyHostApduService extends HostApduService {
             byte[] answer = new byte[2];
             answer[0] = (byte) 0x90;
             answer[1] = (byte) 0x00;
+
             if (pinVerified) {
                 int data_length = apdu[4];
                 if (apdu[3] == 0x00) {              ///// ADD MONEY
+
                     byte[] add_money = Arrays.copyOfRange(apdu, 5, 5+data_length);
                     money += byteArrayToInt(add_money);
                     userLocalStore = new TmpUserLocalStore(getApplicationContext());
@@ -201,6 +216,7 @@ public class MyHostApduService extends HostApduService {
                     answer[0] = (byte) 0x04;
                     answer[1] = (byte) 0x00;
                     responseApdu = answer;
+                    Log.i("HCEDEMO", "wrong apdu");
                     return responseApdu;
                 }
                 pinVerified = false;
@@ -208,6 +224,8 @@ public class MyHostApduService extends HostApduService {
             else {
                 answer[0] = (byte) 0x04;
                 answer[1] = (byte) 0x01;
+                Log.i("HCEDEMO", "No varify");
+
             }
 
             return answer;
